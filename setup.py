@@ -4,13 +4,12 @@ with open("README.md", mode="r", encoding="utf-8") as f:
     readme = f.read()
 
 test_requirements = ["pytest>=4.0.0", "codecov", "pytest-cov"]
-required = []
 
 setup(
     name="labelbot",
     version="0.0.1",
     description=(
-        "A GitHub label bot for allowing unprivileged users to label "
+        "A GitHub label bot for allowing unprivileged users to label issues "
         "with allowed labels."
     ),
     long_description=readme,
@@ -20,8 +19,6 @@ setup(
     license="MIT",
     packages=find_packages(exclude=("tests", "docs")),
     tests_require=test_requirements,
-    install_requires=required,
     extras_require=dict(TEST=test_requirements),
-    include_package_data=True,
     python_requires=">=3.7",
 )
