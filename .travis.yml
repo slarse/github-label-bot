@@ -14,3 +14,5 @@ notifications:
   email: false
 after_success:
 - codecov
+- ./package.sh
+- ls
