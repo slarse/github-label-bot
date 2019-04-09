@@ -4,6 +4,7 @@ with open("README.md", mode="r", encoding="utf-8") as f:
     readme = f.read()
 
 test_requirements = ["pytest>=4.0.0", "codecov", "pytest-cov"]
+required = ["python_jwt", "jwcrypto"]
 
 setup(
     name="labelbot",
@@ -18,6 +19,7 @@ setup(
     author_email="jcroona@kth.se, slarse@kth.se",
     license="MIT",
     packages=find_packages(exclude=("tests", "docs")),
+    install_requires=required,
     tests_require=test_requirements,
     extras_require=dict(TEST=test_requirements),
     python_requires=">=3.7",
