@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 with open("README.md", mode="r", encoding="utf-8") as f:
     readme = f.read()
 
-test_requirements = ["pytest>=4.0.0", "codecov", "pytest-cov"]
-required = ["python_jwt", "jwcrypto"]
+test_requirements = ["pytest>=4.0.0", "codecov", "pytest-cov", "responses"]
+required = ["python_jwt", "jwcrypto", "requests"]
 
 setup(
     name="labelbot",
