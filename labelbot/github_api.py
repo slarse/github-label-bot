@@ -1,3 +1,8 @@
+"""Functions for interacting with the GitHub API.
+
+.. module:: github_api
+    :synopsis: Functions for interacting with the GitHub API.
+"""
 import json
 from typing import Sequence, List
 import requests
@@ -23,7 +28,7 @@ def set_labels(
     labels: Sequence[str], owner: str, repo: str, issue_nr: int, access_token: str
 ) -> bool:
     """Unconditionally set the provided labels on a repository issue.
-    
+
     Args:
         labels: A sequence of labels to set.
         owner: User/Organization that owns the repo.
