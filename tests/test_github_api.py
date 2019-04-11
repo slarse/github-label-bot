@@ -9,7 +9,9 @@ OWNER = "someone"
 REPO = "best-repo"
 ISSUE_NR = 231
 ACCESS_TOKEN = "8924ab4"
-ISSUE_URL = f"https://api.github.com/repos/{OWNER}/{REPO}/issues/{ISSUE_NR}"
+ISSUE_URL = f"{github_api.BASE_URL}/repos/{OWNER}/{REPO}/issues/{ISSUE_NR}"
+ALLOWED_LABELS_URL = f"{github_api.BASE_URL}/repos/{OWNER}/{REPO}/contents/{github_api.ALLOWED_LABELS_FILE}"
+
 
 def create_authed_callback(status, headers, payload):
     """Return a callback that returns a 404 if the request does not have the
@@ -55,7 +57,7 @@ class TestGetLabels:
         """Test that get_labels correctly extracts labels from the JSON
         payload.
         """
-        resp_callback = create_authed_callback(200, {}, JSON_PAYLOAD)
+        resp_callback = create_authed_callback(200, {}, JSON_GET_LABELS_PAYLOAD)
 
         responses.add_callback(responses.GET, url=ISSUE_URL, callback=resp_callback)
 
@@ -68,7 +70,7 @@ class TestGetLabels:
         """Test that get_labels handles a situation where the access token is
         rejected.
         """
-        resp_callback = create_authed_callback(200, {}, JSON_PAYLOAD)
+        resp_callback = create_authed_callback(200, {}, JSON_GET_LABELS_PAYLOAD)
         invalid_token = ACCESS_TOKEN + "2345tr"
 
         responses.add_callback(responses.GET, url=ISSUE_URL, callback=resp_callback)
@@ -79,10 +81,65 @@ class TestGetLabels:
         assert "could not get labels" in str(exc_info)
 
 
+class TestGetFileContents:
+    """Tests for get_file_contents"""
+
+    @responses.activate
+    def test_correctly_fetches_file_contents(self):
+        resp_callback = create_authed_callback(200, {}, JSON_ALLOWED_LABELS_PAYLOAD)
+        responses.add_callback(
+            responses.GET, url=ALLOWED_LABELS_URL, callback=resp_callback
+        )
+        expected_contents = ALLOWED_LABELS_CONTENT
+
+        actual_contents = github_api.get_file_contents(
+            OWNER, REPO, github_api.ALLOWED_LABELS_FILE, ACCESS_TOKEN
+        )
+
+        assert actual_contents == expected_contents
+
+    @responses.activate
+    def test_handles_incorrect_auth(self):
+        resp_callback = create_authed_callback(200, {}, JSON_ALLOWED_LABELS_PAYLOAD)
+        responses.add_callback(
+            responses.GET, url=ALLOWED_LABELS_URL, callback=resp_callback
+        )
+        invalid_token = ACCESS_TOKEN + "23ptwf"
+
+        with pytest.raises(github_api.APIError) as exc_info:
+            github_api.get_file_contents(
+                OWNER, REPO, github_api.ALLOWED_LABELS_FILE, invalid_token
+            )
+
+        assert f"could not fetch {github_api.ALLOWED_LABELS_FILE}" in str(exc_info)
+
+
+ALLOWED_LABELS_CONTENT = "# labels that the labelbot are allowed to set\n# at the behest of users without read-access\nhelp\nbug\nfeature request\n"
+
+JSON_ALLOWED_LABELS_PAYLOAD = json.dumps(
+    {
+        "name": ".allowed-labels",
+        "path": ".allowed-labels",
+        "sha": "f5dba9638257d949a4858ddfbd471cda77a7e416",
+        "size": 116,
+        "url": "https://api.github.com/repos/slarse/labelbot/contents/.allowed-labels?ref=master",
+        "html_url": "https://github.com/slarse/labelbot/blob/master/.allowed-labels",
+        "git_url": "https://api.github.com/repos/slarse/labelbot/git/blobs/f5dba9638257d949a4858ddfbd471cda77a7e416",
+        "download_url": "https://raw.githubusercontent.com/slarse/labelbot/master/.allowed-labels",
+        "type": "file",
+        "content": "IyBsYWJlbHMgdGhhdCB0aGUgbGFiZWxib3QgYXJlIGFsbG93ZWQgdG8gc2V0\nCiMgYXQgdGhlIGJlaGVzdCBvZiB1c2VycyB3aXRob3V0IHJlYWQtYWNjZXNz\nCmhlbHAKYnVnCmZlYXR1cmUgcmVxdWVzdAo=\n",
+        "encoding": "base64",
+        "_links": {
+            "self": "https://api.github.com/repos/slarse/labelbot/contents/.allowed-labels?ref=master",
+            "git": "https://api.github.com/repos/slarse/labelbot/git/blobs/f5dba9638257d949a4858ddfbd471cda77a7e416",
+            "html": "https://github.com/slarse/labelbot/blob/master/.allowed-labels",
+        },
+    }
+)
 
 # real JSON payload from the API
 LABELS = ["enhancement", "info"]
-JSON_PAYLOAD = json.dumps(
+JSON_GET_LABELS_PAYLOAD = json.dumps(
     {
         "url": "https://api.github.com/repos/slarse/github-label-bot/issues/9",
         "repository_url": "https://api.github.com/repos/slarse/github-label-bot",
