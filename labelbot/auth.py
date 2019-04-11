@@ -1,6 +1,6 @@
 """Handles authentication tokens with the GitHub API.
 
-.. module:: authentication
+.. module:: auth
     :synopsis: Functions for generating tokens used for authentication with GitHub.
 .. moduleauthor:: Lars Hummelgren <larshum@kth.se> & Joakim Croona <jcroona@kth.se>
 
@@ -23,7 +23,7 @@ def generate_jwt_token(private_pem: str, app_id: int) -> str:
         private_pem: the private key that is used to generate a JWT
         app_id the Application id
     Returns:
-        The JWT that was generated using the private key
+        The JWT that was generated using the private key and the app id
     """
     private_key = jwcrypto.jwk.JWK.from_pem(private_pem.encode(encoding="utf8"))
     payload = {"iss": app_id}
@@ -32,7 +32,7 @@ def generate_jwt_token(private_pem: str, app_id: int) -> str:
 
 
 def generate_installation_access_token(jwt_token: str, installation_id):
-    """Generates an installation access token using a JWT token.
+    """Generates an installation access token using a JWT token and an installation id.
 
     An installation access token is valid for 1 hour.
 
