@@ -1,0 +1,5 @@
+# labels that the labelbot are allowed to set
+# at the behest of users without read-access
+help
+bug
+feature request
