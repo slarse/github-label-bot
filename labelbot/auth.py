@@ -16,7 +16,7 @@ import requests
 USER_AGENT = "label-bot"
 
 
-def generate_jwt_token(private_pem: str, app_id: int) -> str:
+def generate_jwt_token(private_pem: bytes, app_id: int) -> str:
     """Generates a JWT token valid for 10 minutes using the private key.
 
     Args:
@@ -25,7 +25,7 @@ def generate_jwt_token(private_pem: str, app_id: int) -> str:
     Returns:
         The JWT that was generated using the private key and the app id
     """
-    private_key = jwcrypto.jwk.JWK.from_pem(private_pem.encode(encoding="utf8"))
+    private_key = jwcrypto.jwk.JWK.from_pem(private_pem)
     payload = {"iss": app_id}
     duration = datetime.timedelta(minutes=10)
     return python_jwt.generate_jwt(payload, private_key, "RS256", duration)

@@ -31,5 +31,5 @@ RdDCSLSlSxkpOjWFJPhdW19i/9O4QNNwAF5wCtlIFeN+HF24LwDF7I/Xj26pIKBj
 
 def test_auth_jwt_token():
     """Tests that jwt_token is truthy"""
-    result = auth.generate_jwt_token(rsa_key, 12334)
+    result = auth.generate_jwt_token(rsa_key.encode("utf8"), 12334)
     assert result
