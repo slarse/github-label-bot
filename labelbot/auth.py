@@ -1,0 +1,52 @@
+"""Handles authentication tokens with the GitHub API.
+
+.. module:: authentication
+    :synopsis: Functions for generating tokens used for authentication with GitHub.
+.. moduleauthor:: Lars Hummelgren <larshum@kth.se> & Joakim Croona <jcroona@kth.se>
+
+"""
+
+import datetime
+import http.client
+import json
+import jwcrypto
+import python_jwt
+import requests
+
+USER_AGENT = "label-bot"
+
+
+def generate_jwt_token(private_pem: str, app_id: int) -> str:
+    """Generates a JWT token valid for 10 minutes using the private key.
+
+    Args:
+        private_pem: the private key that is used to generate a JWT
+        app_id the Application id
+    Returns:
+        The JWT that was generated using the private key
+    """
+    private_key = jwcrypto.jwk.JWK.from_pem(private_pem.encode(encoding="utf8"))
+    payload = {"iss": app_id}
+    duration = datetime.timedelta(minutes=10)
+    return python_jwt.generate_jwt(payload, private_key, "RS256", duration)
+
+
+def generate_installation_access_token(jwt_token: str, installation_id):
+    """Generates an installation access token using a JWT token.
+
+    An installation access token is valid for 1 hour.
+
+    Args:
+        jwt_token: a valid JWT token
+        installation_id: the installation id of the app.
+    Returns:
+        An installation access token from the GitHub API
+    """
+    headers = {
+        "Authorization": f"Bearer {jwt_token}",
+        "Accept": "application/vnd.github.machine-man-preview+json",
+        "User-Agent": USER_AGENT,
+    }
+    url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
+    r = requests.post(url, headers=headers)
+    return r.json()["token"]
