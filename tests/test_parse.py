@@ -1,0 +1,58 @@
+import pytest
+from labelbot import parse
+
+SINGLE_LABEL_ISSUE = """This is an issue body.
+
+I want to express some kind of concern. :label:`concern`
+"""
+SINGLE_LABEL = ["concern"]
+
+MULTI_LABEL_ISSUE = """This is another issue body.
+I want to both express :label:`concern` but also
+:label:`happy` :label:`multiple words in label`.
+"""
+MULTI_LABELS = ["concern", "happy", "multiple words in label"]
+
+NO_LABEL_ISSUE = """I just want to write an issue that does not contain any
+labels whatsoever."""
+
+
+@pytest.mark.parametrize(
+    "text, expected_labels",
+    [
+        (SINGLE_LABEL_ISSUE, SINGLE_LABEL),
+        (MULTI_LABEL_ISSUE, MULTI_LABELS),
+        (NO_LABEL_ISSUE, []),
+    ],
+    ids=["single-label", "multi-label", "no label"],
+)
+def test_parse_wanted_labels_correctly_parses_labels(text, expected_labels):
+    actual_labels = parse.parse_wanted_labels(text)
+    assert sorted(actual_labels) == sorted(expected_labels)
+
+
+ALLOWED_LABELS_TEXT = """nice label
+   another label
+
+best label
+"""
+ALLOWED_LABELS = ["nice label", "best label", "another label"]
+COMMENTED_LABELS_TEXT = """nice label
+ # another label
+best label"""
+COMMENT_LABELS = ["nice label", "best label"]
+EMPTY_LABELS_TEXT = ""
+
+
+@pytest.mark.parametrize(
+    "text, expected_labels",
+    [
+        (ALLOWED_LABELS_TEXT, ALLOWED_LABELS),
+        (COMMENTED_LABELS_TEXT, COMMENT_LABELS),
+        (EMPTY_LABELS_TEXT, []),
+    ],
+    ids=("multi-labels", "commented labels", "no labels"),
+)
+def test_parse_allowed_labels_correctly_parses_labeles(text, expected_labels):
+    actual_labels = parse.parse_allowed_labels(text)
+    assert sorted(actual_labels) == sorted(expected_labels)
