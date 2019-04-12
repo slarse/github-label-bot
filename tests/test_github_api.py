@@ -1,9 +1,11 @@
 import json
+import contextlib
+from unittest.mock import patch
+
+import responses
 import pytest
 
 from labelbot import github_api
-
-import responses
 
 OWNER = "someone"
 REPO = "best-repo"
@@ -112,6 +114,49 @@ class TestGetFileContents:
             )
 
         assert f"could not fetch {github_api.ALLOWED_LABELS_FILE}" in str(exc_info)
+
+
+class TestSetAllowedLabels:
+    """Tests for set_allowed_labels."""
+
+    @contextlib.contextmanager
+    def _mocked_apis(self, allowed_labels, wanted_labels, set_labels_result):
+        """All apis mocked out returning the specified values. Yields the
+        set_labels mock.
+        """
+        with patch(
+            "labelbot.github_api.parse.parse_allowed_labels",
+            autospec=True,
+            return_value=allowed_labels,
+        ), patch(
+            "labelbot.github_api.parse.parse_wanted_labels",
+            autospec=True,
+            return_value=wanted_labels,
+        ), patch(
+            "labelbot.github_api.get_file_contents", autospec=True, return_value=""
+        ):
+            with patch(
+                "labelbot.github_api.set_labels", autospec=True, return_value=True
+            ) as set_labels:
+                yield set_labels
+
+    def test_happy_path(self):
+        current_labels = ["enhancement"]
+        allowed_labels = ["bug", "feature request"]
+        wanted_labels = ["feature request", "help", "feature"]
+        expected_labels = {"enhancement", "feature request"}
+
+        with self._mocked_apis(
+            allowed_labels, wanted_labels, set_labels_result=True
+        ) as set_labels:
+            res = github_api.set_allowed_labels(
+                OWNER, REPO, ISSUE_NR, "", current_labels, ACCESS_TOKEN
+            )
+
+        assert res
+        set_labels.assert_called_once_with(
+            expected_labels, OWNER, REPO, ISSUE_NR, ACCESS_TOKEN
+        )
 
 
 ALLOWED_LABELS_CONTENT = "# labels that the labelbot are allowed to set\n# at the behest of users without read-access\nhelp\nbug\nfeature request\n"

@@ -9,6 +9,8 @@ import base64
 from typing import Sequence, List
 import requests
 
+from labelbot import parse
+
 BASE_URL = "https://api.github.com"
 ALLOWED_LABELS_FILE = ".allowed-labels"
 
@@ -29,6 +31,32 @@ def _issue_url(owner, repo, issue_nr):
 
 def _allowed_labels_url(owner, repo):
     return f"{BASE_URL}/repos/{owner}/{repo}/contents/{ALLOWED_LABELS_FILE}"
+
+
+def set_allowed_labels(
+    owner: str,
+    repo: str,
+    issue_nr: int,
+    issue_body: str,
+    current_labels: List[str],
+    access_token: str,
+) -> bool:
+    """Set the current labels plus any requested labels in the issue body that
+    are also allowed by the .allowed-labels file.
+
+    Args:
+        owner: User/Organization that owns the repo.
+        repo: Name of the repo.
+        issue_nr: Number of the issue.
+        access_token: An installation access token for the repo.
+
+    """
+    allowed_labels = parse.parse_allowed_labels(
+        get_file_contents(owner, repo, ALLOWED_LABELS_FILE, access_token)
+    )
+    wanted_labels = parse.parse_wanted_labels(issue_body)
+    labels_to_set = set(current_labels) | (set(allowed_labels) & set(wanted_labels))
+    return set_labels(labels_to_set, owner, repo, issue_nr, access_token)
 
 
 def set_labels(
