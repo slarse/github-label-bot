@@ -1,6 +1,6 @@
 # Github Label Bot (working title)
-[![Build Status](https://travis-ci.com/slarse/github-label-bot.svg)](https://travis-ci.com/slarse/github-label-bot)
-[![Code Coverage](https://codecov.io/gh/slarse/github-label-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/slarse/github-label-bot)
+[![Build Status](https://travis-ci.com/slarse/labelbot.svg)](https://travis-ci.com/slarse/labelbot)
+[![Code Coverage](https://codecov.io/gh/slarse/labelbot/branch/master/graph/badge.svg)](https://codecov.io/gh/slarse/labelbot)
 ![Supported Python Versions](https://img.shields.io/badge/python-3.7-blue.svg)
 ![Supported Platforms](https://img.shields.io/badge/platforms-Linux-blue.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
