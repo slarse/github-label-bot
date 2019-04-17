@@ -12,10 +12,6 @@ from labelbot import parse
 
 
 def lambda_handler(event, context):
-    headers = event["headers"]
-    auth_header = headers["X-Hub-Signature"]
-    print(auth_header)
-    print("---------------------------------------------------------------------------")
     body = json.loads(event["body"])
     installation_id = body["installation"]["id"]
     owner = body["repository"]["owner"]["login"]
@@ -26,7 +22,7 @@ def lambda_handler(event, context):
 
     app_id = int(os.getenv("APP_ID"))
     secret_key = os.getenv("SECRET_KEY")
-    authenticated = authenticate_request(secret_key, event["body"], auth_header)
+    authenticated = authenticate_request(secret_key, event["body"], event["headers"]["X-Hub-Signature"])
     if not authenticated:
         return {"statuscode": 403}
     bucket_name = os.getenv("BUCKET_NAME")
@@ -51,12 +47,15 @@ def get_pem(bucket_name, key):
         pem = f.read()
     return pem
 
+
 def authenticate_request(key: str, body: str, signature: str) -> bool:
     """ Chacks if the X-Hub-Signature header exists, and if it does, verifies that the body 
     matches the hash sent from github."""
     if signature is None:
         return False
-    
-    sha_body = hmac.new(key.encode("utf8"), body.encode("utf8"), hashlib.sha1).hexdigest()
+
+    sha_body = hmac.new(
+        key.encode("utf8"), body.encode("utf8"), hashlib.sha1
+    ).hexdigest()
     alg, sha_github = signature.split("=")
     return hmac.compare_digest(sha_body, sha_github)
