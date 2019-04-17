@@ -7,9 +7,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
+---
+
 ![Labelbot usage example](images/labeling.gif)
 
-**Labelbot in action:** Setting labels for a visitor with read access.
+---
 
 ## Overview
 To set a label on an issue, a user needs write access to the repository.
