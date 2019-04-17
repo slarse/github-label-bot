@@ -1,14 +1,17 @@
+"""Event handler for AWS lambda.
+
+This is the main module of labelbot, and contains the event handler for AWS lambda.  If
+for any reason one would like to use a different service than AWS lambda, this is the
+functionality that needs to be changed.
+
+.. module:: bot
+    :synopsis: Event handler for AWS lambda.
+.. moduleauthor:: Simon Larsén <slarse@kth.se> & Joakim Croona <jcroona@kth.se>
+"""
 import json
-from jwcrypto import jwk
-import python_jwt
 import os
-import boto3
-import botocore
-import hmac
-import hashlib
 from labelbot import auth
 from labelbot import github_api
-from labelbot import parse
 
 
 def lambda_handler(event, context):
@@ -22,12 +25,15 @@ def lambda_handler(event, context):
 
     app_id = int(os.getenv("APP_ID"))
     secret_key = os.getenv("SECRET_KEY")
-    authenticated = authenticate_request(secret_key, event["body"], event["headers"]["X-Hub-Signature"])
+    authenticated = auth.authenticate_request(
+        secret_key, event["body"], event["headers"]["X-Hub-Signature"]
+    )
     if not authenticated:
         return {"statuscode": 403}
+
     bucket_name = os.getenv("BUCKET_NAME")
     bucket_key = os.getenv("BUCKET_KEY")
-    pem = get_pem(bucket_name, bucket_key)
+    pem = auth.get_pem(bucket_name, bucket_key)
 
     jwt_token = auth.generate_jwt_token(pem, app_id)
     access_token = auth.generate_installation_access_token(jwt_token, installation_id)
@@ -37,25 +43,3 @@ def lambda_handler(event, context):
     )
 
     return {"statusCode": 200 if success else 403, "body": json.dumps("temp")}
-
-
-def get_pem(bucket_name, key):
-    """Reads key from s3"""
-    s3 = boto3.resource("s3")
-    s3.Bucket(bucket_name).download_file(key, "/tmp/key.pem")
-    with open("/tmp/key.pem", "rb") as f:
-        pem = f.read()
-    return pem
-
-
-def authenticate_request(key: str, body: str, signature: str) -> bool:
-    """ Chacks if the X-Hub-Signature header exists, and if it does, verifies that the body 
-    matches the hash sent from github."""
-    if signature is None:
-        return False
-
-    sha_body = hmac.new(
-        key.encode("utf8"), body.encode("utf8"), hashlib.sha1
-    ).hexdigest()
-    alg, sha_github = signature.split("=")
-    return hmac.compare_digest(sha_body, sha_github)

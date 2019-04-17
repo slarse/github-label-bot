@@ -33,3 +33,21 @@ def test_auth_jwt_token():
     """Tests that jwt_token is truthy"""
     result = auth.generate_jwt_token(rsa_key.encode("utf8"), 12334)
     assert result
+
+
+class TestAuthenticateRequest:
+    SECRET = "d653a60adc0a16a93e99f0620a67f4a67ef901df"
+    BODY = "Hello, World!"
+    SIGN = "sha1=8727505c9c036b2337a06d2e63f091a7aa41ae60"
+
+    def test_correct_hash(self):
+        result = auth.authenticate_request(self.SECRET, self.BODY, self.SIGN)
+        assert result
+
+    def test_incorrect_hash(self):
+        result = auth.authenticate_request(self.SECRET, self.BODY.lower(), self.SIGN)
+        assert not result
+
+    def test_no_signature(self):
+        result = auth.authenticate_request(self.SECRET, self.BODY, None)
+        assert not result

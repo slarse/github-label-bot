@@ -6,7 +6,7 @@
 import json
 import sys
 import base64
-from typing import Sequence, List
+from typing import Iterable, List
 import requests
 
 from labelbot import parse
@@ -60,7 +60,7 @@ def set_allowed_labels(
 
 
 def set_labels(
-    labels: Sequence[str], owner: str, repo: str, issue_nr: int, access_token: str
+    labels: Iterable[str], owner: str, repo: str, issue_nr: int, access_token: str
 ) -> bool:
     """Unconditionally set the provided labels on a repository issue.
 
