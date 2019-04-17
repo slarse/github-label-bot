@@ -8,7 +8,7 @@ required = ["python_jwt", "jwcrypto", "requests", "boto3"]
 
 setup(
     name="labelbot",
-    version="0.0.3",
+    version="0.0.4",
     description=(
         "A GitHub label bot for allowing unprivileged users to label issues "
         "with allowed labels."
