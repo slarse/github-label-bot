@@ -1,8 +1,17 @@
+"""Event handler for AWS lambda.
+
+This is the main module of labelbot, and contains the event handler for AWS lambda.  If
+for any reason one would like to use a different service than AWS lambda, this is the
+functionality that needs to be changed.
+
+.. module:: bot
+    :synopsis: Event handler for AWS lambda.
+.. moduleauthor:: Simon Larsén <slarse@kth.se> & Joakim Croona <jcroona@kth.se>
+"""
 import json
 import os
 from labelbot import auth
 from labelbot import github_api
-from labelbot import parse
 
 
 def lambda_handler(event, context):
@@ -21,6 +30,7 @@ def lambda_handler(event, context):
     )
     if not authenticated:
         return {"statuscode": 403}
+
     bucket_name = os.getenv("BUCKET_NAME")
     bucket_key = os.getenv("BUCKET_KEY")
     pem = auth.get_pem(bucket_name, bucket_key)

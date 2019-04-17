@@ -3,7 +3,6 @@
 .. module:: auth
     :synopsis: Functions for handling authentication procedures.
 .. moduleauthor:: Lars Hummelgren <larshum@kth.se> & Joakim Croona <jcroona@kth.se>
-
 """
 
 import datetime
