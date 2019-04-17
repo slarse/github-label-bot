@@ -12,7 +12,7 @@ from labelbot import parse
 
 
 def lambda_handler(event, context):
-    headers = json.loads(event["headers"])
+    headers = event["headers"]
     auth_header = headers.get("X-Hub-Signature")
     body = json.loads(event["body"])
     installation_id = body["installation"]["id"]
