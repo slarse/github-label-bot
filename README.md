@@ -2,15 +2,14 @@
 [![Build Status](https://travis-ci.com/slarse/labelbot.svg)](https://travis-ci.com/slarse/labelbot)
 [![Documentation Status](https://readthedocs.org/projects/labelbot/badge/?version=latest)](https://labelbot.readthedocs.io/en/latest/?badge=latest)
 [![Code Coverage](https://codecov.io/gh/slarse/labelbot/branch/master/graph/badge.svg)](https://codecov.io/gh/slarse/labelbot)
-![Supported Python Versions](https://img.shields.io/badge/python-3.7-blue.svg)
+![Supported Python Versions](https://img.shields.io/badge/python-3.6%2C%203.7-blue.svg)
 ![Supported Platforms](https://img.shields.io/badge/platforms-Linux-blue.svg)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-**Labelbot in action:** Setting labels for a visitor with read access to a
-repository.
-
 ![Labelbot usage example](images/labeling.gif)
+
+**Labelbot in action:** Setting labels for a visitor with read access.
 
 ## Overview
 To set a label on an issue, a user needs write access to the repository.
@@ -55,16 +54,16 @@ formal complaint
 help
 ```
 
-A visitor can then open an issue with a body like this:
+A visitor can open an issue with a body like this:
 
 ```
-AWS lambda doesn't work, help me!
+I can't get Labelbot to work, help!
 
 :label:`help` :label:`formal complaint`
 ```
 
-The issue be labeled with `help` and `formal complaint`. This process is
-illustrated at the top of this page.
+Labelbot will then set the labels `help` and `formal complaint` on the issue.
+This process is illustrated in the gif at the top of this page.
 _[Head over to the repo](https://github.com/jcroona/labelbot-demo) and try it
 out yourself if you'd like!_
 
