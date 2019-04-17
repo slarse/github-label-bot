@@ -13,7 +13,9 @@ from labelbot import parse
 
 def lambda_handler(event, context):
     headers = event["headers"]
-    auth_header = headers.get("X-Hub-Signature")
+    auth_header = headers["X-Hub-Signature"]
+    print(auth_header)
+    print("---------------------------------------------------------------------------")
     body = json.loads(event["body"])
     installation_id = body["installation"]["id"]
     owner = body["repository"]["owner"]["login"]
@@ -22,13 +24,13 @@ def lambda_handler(event, context):
     issue_body = body["issue"]["body"]
     current_labels = [label["name"] for label in body["issue"]["labels"]]
 
-    app_id = int(os.environ["APP_ID"])
-    secret_key = os.environ["SECRET_KEY"]
-    authenticated = authenticate_request(secret_key, body, auth_header)
+    app_id = int(os.getenv("APP_ID"))
+    secret_key = os.getenv("SECRET_KEY")
+    authenticated = authenticate_request(secret_key, event["body"], auth_header)
     if not authenticated:
         return {"statuscode": 403}
-    bucket_name = os.environ["BUCKET_NAME"]
-    bucket_key = os.environ["BUCKET_KEY"]
+    bucket_name = os.getenv("BUCKET_NAME")
+    bucket_key = os.getenv("BUCKET_KEY")
     pem = get_pem(bucket_name, bucket_key)
 
     jwt_token = auth.generate_jwt_token(pem, app_id)
