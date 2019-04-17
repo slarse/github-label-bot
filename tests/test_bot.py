@@ -1,4 +1,5 @@
 from labelbot import bot
+import responses
 import pytest
 
 
@@ -14,14 +15,17 @@ def env_setup(mocker):
     yield values
 
 
+@responses.activate
 def test_lambda_handler_authentication_failure(env_setup):
-    """Test that lambda_handler correctly handles unauthorized requests."""
+    """Test that lambda_handler correctly handles unauthorized requests (here,
+    all of the secrets are bogus).
+    """
     event = {
         "headers": {"X-Hub-Signature": "sha1=4afefa55e46cc2ac696127dae55b49aeb999b7e8"},
         "body": jsonstring,
     }
     result = bot.lambda_handler(event, None)
-    assert result
+    assert result["statuscode"] == 403
 
 
 jsonstring = """{
