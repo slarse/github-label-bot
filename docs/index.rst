@@ -10,6 +10,7 @@ Welcome to Labelbot's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   deploy
    code
 
 
