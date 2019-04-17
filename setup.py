@@ -3,12 +3,18 @@ from setuptools import setup, find_packages
 with open("README.md", mode="r", encoding="utf-8") as f:
     readme = f.read()
 
-test_requirements = ["pytest>=4.0.0", "codecov", "pytest-cov", "responses","pytest-mock"]
+test_requirements = [
+    "pytest>=4.0.0",
+    "codecov",
+    "pytest-cov",
+    "responses",
+    "pytest-mock",
+]
 required = ["python_jwt", "jwcrypto", "requests", "boto3"]
 
 setup(
     name="labelbot",
-    version="0.0.4",
+    version="0.0.6",
     description=(
         "A GitHub label bot for allowing unprivileged users to label issues "
         "with allowed labels."
