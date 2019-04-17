@@ -1,34 +1,28 @@
 from labelbot import bot
 import pytest
-SECRET = "d653a60adc0a16a93e99f0620a67f4a67ef901df"
-BODY = "Hello, World!"
-SIGN = "sha1=8727505c9c036b2337a06d2e63f091a7aa41ae60"
-
-class TestAuthenticateRequest:
-    def test_correct_hash(self):
-        result = bot.authenticate_request(SECRET,BODY, SIGN)
-        assert result
-
-    def test_incorrect_hash(self):
-        result = bot.authenticate_request(SECRET,BODY.lower(), SIGN)
-        assert not result
-
-    def test_no_signature(self):
-        result = bot.authenticate_request(SECRET,BODY, None)
-        assert not result
-
 
 
 @pytest.fixture
 def env_setup(mocker):
-    values = {"APP_ID": "243554", "SECRET_KEY": "66535665634", "BUCKET_NAME": "My_bucket", "BUCKET_KEY": "my_file"}
+    values = {
+        "APP_ID": "243554",
+        "SECRET_KEY": "66535665634",
+        "BUCKET_NAME": "My_bucket",
+        "BUCKET_KEY": "my_file",
+    }
     mocker.patch("os.getenv", autospec=True, side_effect=values.get)
     yield values
 
-def test_lambda_handler_authentication(env_setup):
-    event = {"headers": {"X-Hub-Signature": "sha1=4afefa55e46cc2ac696127dae55b49aeb999b7e8"},"body": jsonstring}
+
+def test_lambda_handler_authentication_failure(env_setup):
+    """Test that lambda_handler correctly handles unauthorized requests."""
+    event = {
+        "headers": {"X-Hub-Signature": "sha1=4afefa55e46cc2ac696127dae55b49aeb999b7e8"},
+        "body": jsonstring,
+    }
     result = bot.lambda_handler(event, None)
     assert result
+
 
 jsonstring = """{
   "action": "reopened",
@@ -199,5 +193,3 @@ jsonstring = """{
     "node_id": "MDIzOkludGVncmF0aW9uSW5zdGFsbGF0aW9uODI1OTU4"
   }
 }"""
-
-
